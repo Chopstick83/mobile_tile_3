@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bgrvv3vnlyrw3"]
+
+[ext_resource type="Script" uid="uid://ba1myk03xj1c7" path="res://game.gd" id="1_80nbo"]
+[ext_resource type="Texture2D" uid="uid://dqh2dph6s3lr0" path="res://32banana.png" id="2_e2o6t"]
+
+[node name="Game" type="Node2D" unique_id=1812874403]
+script = ExtResource("1_80nbo")
+puzzle_texture = ExtResource("2_e2o6t")
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=185904952]
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 8

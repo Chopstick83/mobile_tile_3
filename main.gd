@@ -9,13 +9,6 @@ var tiles: Array # 3D 배열로 전체 타일 데이터 저장 (grid_z, grid_y, 
 var active_tiles: Array[Node] # 현재 보드에 실제 존재하는 타일 노드들을 저장
 var selected_tiles: Array = [] # 현재 선택된 타일들을 저장 (매치3 등)
 
-enum AccessType {
-	ALL_ABOVE_CONSUMED, # 사천성 방식
-	ADJACENT_ABOVE_CONSUMED # 매치3 방식 (인접한 타일)
-}
-
-@export var access_type: AccessType = AccessType.ADJACENT_ABOVE_CONSUMED
-
 func _ready():
 	_initialize_board()
 	_populate_board()
@@ -58,29 +51,15 @@ func _on_tile_clicked(tile_data: Dictionary):
 
 	print("Tile at (%d, %d, %d) with ID %d clicked!" % [x, y, z, tile_data.id])
 
-	# 선택 로직 (예: 매치3 퍼즐의 경우)
-	if access_type == AccessType.ADJACENT_ABOVE_CONSUMED:
-		if selected_tiles.size() < 2:
-			selected_tiles.append(tile_data)
-			tile_node.select_tile()
-			if selected_tiles.size() == 2:
-				_check_for_match()
-		else:
-			_clear_selection()
-			selected_tiles.append(tile_data)
-			tile_node.select_tile()
-	elif access_type == AccessType.ALL_ABOVE_CONSUMED: # 사천성 방식
-		if selected_tiles.size() == 0:
-			selected_tiles.append(tile_data)
-			tile_node.select_tile()
-		elif selected_tiles.size() == 1:
-			var first_tile = selected_tiles[0]
-			if first_tile.id == tile_data.id and first_tile.node != tile_data.node:
-				_remove_pair(first_tile, tile_data)
-			else:
-				_clear_selection()
-				selected_tiles.append(tile_data)
-				tile_node.select_tile()
+	if selected_tiles.size() < 2:
+		selected_tiles.append(tile_data)
+		tile_node.select_tile()
+		if selected_tiles.size() == 2:
+			_check_for_match()
+	else:
+		_clear_selection()
+		selected_tiles.append(tile_data)
+		tile_node.select_tile()
 
 func _clear_selection():
 	for tile_data in selected_tiles:
@@ -116,20 +95,10 @@ func _can_access_tile(x: int, y: int, z: int) -> bool:
 	if z >= board_depth - 1: # 가장 위층 타일은 항상 접근 가능
 		return true
 
-	match access_type:
-		AccessType.ALL_ABOVE_CONSUMED:
-			# 사천성 방식: 위층의 해당 x,y 좌표에 타일이 없어야 아래층 접근 가능
-			if tiles[z + 1][y][x] != -1:
-				return false
-			return true
-
-		AccessType.ADJACENT_ABOVE_CONSUMED:
-			# 매치3 방식: 위층의 해당 x,y 좌표에 타일이 없어야 아래층 접근 가능
-			# 2D 층 쌓기에서는 기본적으로 바로 위 타일만 확인합니다.
-			if tiles[z + 1][y][x] != -1:
-				return false
-			return true
-	return false
+	# 2D 층 쌓기에서는 기본적으로 바로 위 타일만 확인합니다.
+	if tiles[z + 1][y][x] != -1:
+		return false
+	return true
 
 func _check_game_over():
 	if active_tiles.size() == 0:

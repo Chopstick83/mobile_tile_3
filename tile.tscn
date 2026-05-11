@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dkjyq002ln0rm"]
+
+[ext_resource type="Script" uid="uid://cdxop34ep6nl7" path="res://tile.gd" id="1_n3f48"]
+[ext_resource type="Texture2D" uid="uid://bykpkpqt3px0c" path="res://[64x64] Potions.png" id="2_vx4y2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vx4y2"]
+size = Vector2(62.5, 62)
+
+[node name="Tile" type="Area2D" unique_id=1474907447]
+script = ExtResource("1_n3f48")
+texture_atlas = ExtResource("2_vx4y2")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1271695765]
+texture = ExtResource("2_vx4y2")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1329575710]
+position = Vector2(-0.25, 0)
+shape = SubResource("RectangleShape2D_vx4y2")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
